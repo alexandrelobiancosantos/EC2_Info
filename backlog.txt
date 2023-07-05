@@ -1,0 +1,74 @@
+1. Preparar ambiente de desenvolvimento no Windows:
+   - Configurar um ambiente virtual Python(venv)
+   - Ativar venv
+        .\venv\Scripts\activate
+
+2. Criar projeto e app em Django, testar localmente:
+   - Criar um novo projeto Django
+        pip install django
+        python.exe -m pip install --upgrade pip
+        django-admin startproject EC2_Proj .
+        python .\manage.py runserver
+   - Criar um aplicativo (app) dentro do projeto
+        django-admin startapp EC2_app
+
+   - Criar urls.py no diretorio do app
+        path('', home, name='home'),
+   - incluir path do app no urls.py do projeto      
+        path('', include('EC2_app.urls')),
+   - Definir views no app
+        def home(request):
+            return render(request, 'EC2_app/home.html')
+
+
+   - Criar templates/app/home.html
+
+
+   - Editar settings.py no diretorio do projeto
+        ALLOWED_HOSTS = ['*']
+        ...
+        INSTALLED_APPS = [
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+            'EC2_App',
+        ]
+        ...
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
+
+
+   - Testar o app localmente
+
+3. Fazer backup no GitHub:
+   - Criar um repositório no GitHub
+   - Inicializar o controle de versão no projeto Django
+   - Fazer o commit e o push do código para o repositório
+
+4. Criar instância com userdata contendo as configurações iniciais até a primeira página do Django estar disponível:
+   - Criar uma instância EC2 na AWS
+   - Configurar o userdata para executar as configurações iniciais necessárias
+   - Garantir que a instância tenha acesso à Internet
+
+5. Configurar configuração inicial da instância:
+   - Instalar as dependências necessárias na instância EC2 (Python, Django, etc.)
+   - Configurar o servidor web (por exemplo, Nginx ou Apache)
+   - Configurar o banco de dados (por exemplo, PostgreSQL ou MySQL)
+   - Configurar as variáveis de ambiente e as configurações do projeto Django
+
+6. Deploy do projeto:
+   - Fazer o upload do código do projeto para a instância EC2
+   - Configurar as permissões e as configurações de segurança necessárias
+   - Executar as migrações do banco de dados
+   - Reiniciar o servidor web e o serviço do projeto Django
+
+7. Teste do projeto:
+   - Verificar se a página inicial do Django está disponível na instância EC2
+   - Testar a funcionalidade do aplicativo na instância EC2
+   - Realizar testes adicionais para garantir que tudo funcione corretamente
+
+Lembre-se de que esses tópicos são apenas um ponto de partida e podem ser adaptados ou expandidos de acordo com as necessidades do seu projeto.
