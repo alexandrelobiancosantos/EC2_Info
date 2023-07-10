@@ -5,51 +5,35 @@ PROJECT_PATH="/var/www/EC2_Django_Info"
 PROJECT_NAME="EC2_proj"
 APP_NAME="EC2_app"
 
-# Nome do arquivo de log
-LOG_FILE="$PROJECT_PATH/bashlog.txt"
-
-# Função para registrar o log
-log() {
-    echo "$(date): $*" >> "$LOG_FILE"
-}
 
 # Redirecionar a saída padrão e a saída de erro para o arquivo de log
 exec > >(sudo tee -a "$LOG_FILE")
 exec 2>&1
 
-# Registrar o início do script no log
-log "Início do script"
 
 # Atualizar e fazer upgrade dos pacotes
-log "Atualizando e fazendo upgrade dos pacotes"
-sudo apt update && sudo apt upgrade -y || { log "Falha ao atualizar e fazer upgrade dos pacotes"; exit 1; }
+sudo apt update && sudo apt upgrade -y --auto-remove
 
 # Instalar o Python, pip e venv
-log "Instalando o Python, pip e venv"
-sudo apt install -y python3 python3-pip python3-venv || { log "Falha ao instalar o Python, pip e venv"; exit 1; }
+sudo apt install -y python3 python3-pip python3-venv --auto-remove
 
 # Criar e ativar o ambiente virtual Python
-log "Criando e ativando o ambiente virtual Python"
 sudo python3 -m venv "$PROJECT_PATH/venv" || { log "Falha ao criar o ambiente virtual Python"; exit 1; }
+sudo chmod -R 777 "$PROJECT_PATH" || { log "Falha ao definir permissões para o diretório de trabalho"; exit 1; }
 source "$PROJECT_PATH/venv/bin/activate"
 
 # Instalar o Django e outras dependências
-log "Instalando o Django e outras dependências"
-pip install django || { log "Falha ao instalar o Django e outras dependências"; exit 1; }
+sudo pip install django || { log "Falha ao instalar o Django e outras dependências"; exit 1; }
 
 # Criar o projeto Django
-log "Criando o projeto Django"
 django-admin startproject "$PROJECT_NAME" "$PROJECT_PATH" || { log "Falha ao criar o projeto Django"; exit 1; }
 
 # Criar o aplicativo dentro do projeto
-log "Criando o aplicativo dentro do projeto"
 # python manage.py startapp "$APP_NAME" || { log "Falha ao criar o aplicativo dentro do projeto"; exit 1; }
 cd $PROJECT_PATH
 django-admin startapp "$APP_NAME" || { log "Falha ao criar o aplicativo dentro do projeto"; exit 1; }
 
-
 # Editar settings.py no diretório do projeto
-log "Editando settings.py no diretório do projeto"
 sudo sed -i "s/ALLOWED_HOSTS = \[\]/ALLOWED_HOSTS = ['*']/" "$PROJECT_NAME/settings.py" || { log "Falha ao editar o settings.py"; exit 1; }
 sudo sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    '$APP_NAME',/" "$PROJECT_NAME/settings.py" || { log "Falha ao editar o settings.py"; exit 1; }
 # sudo sed -i "s/'DIRS': \[\],/'DIRS': [\n    BASE_DIR \/ 'templates',\n],/" "$PROJECT_NAME/settings.py" || { log "Falha ao editar o settings.py"; exit 1; }
